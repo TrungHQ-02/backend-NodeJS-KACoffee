@@ -134,7 +134,7 @@ let handleGetAllUsersByRole = async (req, res) => {
 }
 
 let handleVerifyPhoneAndSendMail = async (req, res) => {
-    let phone = req.query.phone;
+    let phone = req.body.phone;
     if (!phone) {
         return res.status(200).json({
             code: 1,
@@ -207,6 +207,17 @@ let handleResetPassword = async (req, res) => {
     })
 }
 
+let handleRank = async (req, res) => {
+    const { idUser } = req.query
+    const listOrder = await userService.getRankUser(idUser)
+    if(listOrder){
+        res.status(200).send(listOrder)
+    }else{
+        res.status(401).send(listOrder)
+    }
+}
+
+
 module.exports = {
     handleUserLogin: handleUserLogin,
     handleCreateNewUser: handleCreateNewUser,
@@ -218,5 +229,6 @@ module.exports = {
     handleGetAllUsersByRole: handleGetAllUsersByRole,
     handleVerifyPhoneAndSendMail: handleVerifyPhoneAndSendMail,
     handleVerifyResetPasswordCode: handleVerifyResetPasswordCode,
-    handleResetPassword: handleResetPassword
+    handleResetPassword: handleResetPassword,
+    handleRank: handleRank
 }

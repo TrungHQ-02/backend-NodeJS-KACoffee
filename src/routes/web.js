@@ -18,6 +18,7 @@ let initRoutes = (app) => {
     router.get('/api/get-user-by-id', userController.handleGetUserById);//OK
     router.get('/api/get-user-by-phone', userController.handleGetUserByPhone);//OK
     router.get('/api/get-all-users-by-role', userController.handleGetAllUsersByRole);//OK
+    router.get('/api/get-rank-user', userController.handleRank)
 
     // usercontroller for resetting password
     router.post('/api/verify-phone-and-send-mail', userController.handleVerifyPhoneAndSendMail);
@@ -34,12 +35,14 @@ let initRoutes = (app) => {
     router.get('/api/get-voucher-info-by-code', voucherController.handleGetVoucherByCode);//OK
 
     //item controller
-    router.post('/api/create-new-item', itemController.uploadImg, itemController.handleCreateNewItem); // OK
+    router.put('/api/upload-item', itemController.uploadItem(), itemController.handleUploadItem);
+    router.post('/api/create-new-item', itemController.handleCreateNewItem); // OK
     router.delete('/api/delete-item', itemController.handleDeleteItem); // OK
     router.put('/api/edit-item-info-by-id', itemController.handleEditItemInfoById); //OK
     router.get('/api/get-item-info-by-id', itemController.handleGetItemById);// OK
     router.get('/api/get-all-items', itemController.handleGetAllItems);// OK
-    router.get('/api/get-item-image-by-id', itemController.handleGetItemImageById) //OK
+    router.get('/api/get-item-image-by-id', itemController.handleGetItemImageById); //OK
+    // router.put('/api/update-item-image-by-id', itemController.uploadImg, itemController.handleEditItemImageById);
 
     //order controller
     router.post('/api/create-new-order-and-detail', orderController.handleCreateNewOrderAndDetail);

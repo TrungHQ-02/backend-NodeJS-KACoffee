@@ -1,4 +1,4 @@
-import db from "../models/index"
+import db from "../models/index";
 
 // amount: DataTypes.INTEGER,
 //     price: DataTypes.INTEGER,
@@ -6,49 +6,66 @@ import db from "../models/index"
 //             image_link: DataTypes.TEXT,
 //                 name: DataTypes.STRING
 
-let createNewItem = (data, filePath) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            if (!data.price || !data.description || !data.name) {
-                resolve({
-                    code: 1,
-                    message: 'Missing input parameters'
-                })
-            }
-            else {
+const createNewItem = async (req, res) => {
+  try {
+    const { name, amount, price, description } = req.body;
+    const Item = await db.Item.create({
+      amount: amount,
+      price: price,
+      description: description,
+      name: name,
+    });
+    if (Item) {
+      res.status(201).send({
+        code: 0,
+        message: "Successfully create item",
+        data: Item,
+      });
+    } else {
+      throw new Error({
+        code: 2,
+        message: "Error create item",
+      });
+    }
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
 
-
-                await db.Item.create({
-                    amount: data.amount,
-                    price: data.price,
-                    description: data.description,
-                    image_link: filePath,
-                    name: data.name
-                })
-
-                await db.Item.findOne({
-                    where: {
-
-                    }
-                })
-
-                resolve({
-                    code: 0,
-                    message: "Successfully created"
-                })
-            }
-        } catch (error) {
-            reject(error);
-        }
-    })
-}
+let uploadItem = async (req, res) => {
+  try {
+    const { id } = req.query;
+    const file = req.file;
+    const Item = await db.Item.update(
+      { image_link: file.filename },
+      {
+        where: {
+          id: id,
+        },
+      }
+    );
+    if (Item) {
+      res.status(201).send({
+        code: 0,
+        message: "Successfully upload image item",
+      });
+    } else {
+      throw new Error({
+        code: 2,
+        message: "Cannot upload image item",
+      });
+    }
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
 
 let deleteItem = (id) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            let itemToDelete = await db.Item.findOne({
-                where: { id: id }
-            })
+  return new Promise(async (resolve, reject) => {
+    try {
+      let itemToDelete = await db.Item.findOne({
+        where: { id: id },
+      });
 
             if (itemToDelete) {
                 await db.Item.destroy({
@@ -115,48 +132,48 @@ let editItemById = (data) => {
 }
 
 let getAllItems = () => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            let items = '';
-            items = await db.Item.findAll({ raw: true });
-            resolve(items);
-        } catch (error) {
-            reject(error);
-        }
-    })
-}
+  return new Promise(async (resolve, reject) => {
+    try {
+      let items = "";
+      items = await db.Item.findAll({ raw: true });
+      resolve(items);
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 
 let getItemById = (id) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            let item = '';
-            if (id) {
-                item = await db.Item.findOne({
-                    where: {
-                        id: id
-                    },
-                    raw: true
-                })
+  return new Promise(async (resolve, reject) => {
+    try {
+      let item = "";
+      if (id) {
+        item = await db.Item.findOne({
+          where: {
+            id: id,
+          },
+          raw: true,
+        });
 
-                resolve(item);
-            }
-        } catch (error) {
-            reject(error);
-        }
-    })
-}
+        resolve(item);
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 
 let getItemFilePath = (id) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            let item = '';
-            if (id) {
-                item = await db.Item.findOne({
-                    where: {
-                        id: id
-                    },
-                    raw: true
-                })
+  return new Promise(async (resolve, reject) => {
+    try {
+      let item = "";
+      if (id) {
+        item = await db.Item.findOne({
+          where: {
+            id: id,
+          },
+          raw: true,
+        });
 
                 if (item) {
                     resolve(item.image_link);
@@ -177,5 +194,6 @@ module.exports = {
     editItemById: editItemById,
     getAllItems: getAllItems,
     getItemById: getItemById,
-    getItemFilePath: getItemFilePath
+    getItemFilePath: getItemFilePath,
+    uploadItem: uploadItem
 }
